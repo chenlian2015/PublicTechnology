@@ -1,0 +1,90 @@
+protobuf使用简单实例
+
+1.下载protobuf
+http://code.google.com/p/protobuf/downloads/list
+
+2.安装
+tar -xzf protobuf-2.1.0.tar.gz 
+ cd protobuf-2.1.0 
+ ./configure --prefix=$INSTALL_DIR 
+ make 
+ make check 
+ make install
+ 
+ 3.编写.proto文件
+ 文件名：1.proto
+ 内容：
+ package lm; 
+ message helloworld 
+ { 
+    required int32     id = 1;  // ID 
+    required string    str = 2;  // str 
+    optional int32     opt = 3;  //optional field 
+ } 
+ 
+ 4.编译1.proto
+ protoc  --cpp_out=./  ./addressbook.proto
+编译后，当前目录生成两个文件
+1.pb.cc  1.pb.h
+
+5.编写下面的writer.cpp
+ 
+#include "1.pb.h"
+#include<iostream>
+#include<fstream>
+using namespace std;
+int main(int argc, char* argv[]) 
+ { 
+  if(argc != 3)
+  {
+	return -1;
+  }
+  
+  lm::helloworld msg1; 
+  msg1.set_id(atoi(argv[1])); 
+  msg1.set_str(argv[2]); 
+    
+  // Write the new address book back to disk. 
+  fstream output("./log", ios::out | ios::trunc | ios::binary); 
+        
+  if (!msg1.SerializeToOstream(&output)) { 
+      cerr << "Failed to write msg." << endl; 
+      return -1; 
+  }         
+  return 0; 
+ } 
+ 
+ 6.编写下面的reader.cpp
+#include "1.pb.h"
+#include<iostream>
+#include<fstream>
+using namespace std;
+ void ListMsg(const lm::helloworld & msg) { 
+  cout << msg.id() << endl; 
+  cout << msg.str() << endl; 
+ } 
+ 
+ int main(int argc, char* argv[]) 
+ { 
+
+  lm::helloworld msg1; 
+
+    fstream input("./log", ios::in | ios::binary); 
+    if (!msg1.ParseFromIstream(&input)) 
+	{ 
+      cerr << "Failed to parse address book." << endl; 
+      return -1; 
+    } 
+ 
+  ListMsg(msg1); 
+  
+ } 
+ 
+ 7.编译cpp文件
+ g++ 1.pb.cc writer.cpp -lprotobuf-lite -lprotoc -lprotobuf -lpthread  -L/usr/lib  -o w
+ g++ 1.pb.cc reader.cpp -lprotobuf-lite -lprotoc -lprotobuf -lpthread  -L/usr/lib  -o r
+ 
+ 8.测试
+ ./w 18 chenlian
+ ./r
+ 

@@ -1,0 +1,4 @@
+1.
+Jingle 定义编辑
+
+Jingle 是XMPP的扩展协议。通过 Jingle 可以实现点对点（P2P）的多媒体交互会话控制，如：语音交互（VOIP），Jingle 由 Google 和 XMPP 基金会设计。

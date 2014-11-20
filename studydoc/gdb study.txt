@@ -1,0 +1,22 @@
+gdb笔记
+1.条件断点，n=1那么将设置这个n的值为1，条件测试要用==
+2.finish执行完成当前函数
+3.bt打印调用堆栈
+4.thread显示当前现场id
+5.break sort.cpp:47 thread 1 if argc>10  针对线程id断点  
+6.bt和frame n , up , down配合使用，frame用于切换堆栈层
+7.查看连续内存的方式  p *grp@3 （查看了数组的前三个元素）
+8.p/x可以十六进制输出整数，当然还有如d,u,o,c,f等等格式
+9.info line test.c:add 来产科源代码在内存中的地址
+info f 打印堆栈信息
+info args/locals/catch
+10.和p对应的display
+11.p x=10 来调试运行时改变变量的值
+12.jump 行号/程序地址  ，需要注意的是，jump命令不会改变堆栈，所以最好在同一个函数中jump，否则必然
+会引起错误
+13.signal *（eg. SIGINT） 产生信号如中断
+14.info source 查看当前程序所在源码文件路径
+15.info add main  查看函数main的内存地址 然后break *地址 可以main这里添加断点
+16.给类函数添加断点，不需要文件名称 eg: classname::functionname
+17.set listsize 30 //将改变list命令显示的代码行数
+show listsize

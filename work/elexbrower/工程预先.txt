@@ -1,0 +1,21 @@
+﻿1.下载编译运行chromium 
+
+2.下载编译webkit
+
+3.对比webkit和chromium
+
+1.研究git,以及如何和chromium同步
+
+1.对比各大浏览器
+
+
+1.有些网站确实只能在ie上跑，比如有activex的。
+2.如果在chrome上改，如何同步其快速的更新。
+
+
+1.ie和chromimu如何进行双核无缝衔接
+
+
+
+//功能细节
+1.广告拦截 1.adblock 	2.Easylist China+EasyList

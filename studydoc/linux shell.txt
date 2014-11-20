@@ -1,0 +1,28 @@
+linux shell学习笔记
+1.查看目录大小 du -s/sh 目录
+
+2.vim 输入命令set number 就可以显示行号了
+
+3.vim 复制 起始行号，结束行号 copy 目标行号
+
+4.cat /proc/cpuinfo
+free
+
+5.vsftpd服务始终链接不是，结果 service iptables stop后就可以了
+
+6.用xftp登陆linux vsftpd后，看不到有些文件
+需要设置selinux  具：
+vi /etc/selinux/config   把SELINUX=enforce   改成disabled
+扩展：SELinux(Security-Enhanced Linux) 是美国国家安全局（NSA）对于强制访问控制的实现，是 Linux历史上最杰出的新安全子系统。NSA是在Linux社区的帮助下开发了一种访问控制体系，在这种访问控制体系的限制下，进程只能访问那些在他的任务中所需要文件
+
+7.halt 关机  reboot 重启
+
+8.gcc44 gcc44-c++ gcc-c++ 有区别的，用错时候，可能出现error: no newline at end of file一类的错误
+
+9.查看动态链接库依赖ldd
+
+10.查看centos发布版本
+ cat /etc/issue
+ 
+内核版本：
+/proc/version

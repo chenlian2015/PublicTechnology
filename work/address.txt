@@ -1,0 +1,6 @@
+1.
+代码权限申请地址
+http://yunwei.hoolai.com/applyInnerAccess.jsp
+
+2.邮箱地址
+http://mail.hoolai.com/zimbra/h/search?mesg=welcome&init=true

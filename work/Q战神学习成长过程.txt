@@ -1,0 +1,15 @@
+1.在xml表中，一个活动有多重配置id，例如转盘和砸蛋的Wonderland.xml配置文件，其中id="1" lotteryId="1"两项，分别表示活动id和活动类型id,id是唯一的，但lotteryId="1"可以被重复多次。
+
+而后端程序代码中，根据lotteryId="1"来确定活动命令类型，以和前端交互。
+而MySQL的SerssionServer的GAMEACTIVITY表中的ACTIVITYID和xml的id=""是一一对应的，表中TYPE和后端代码的命令类型值是对应的。
+
+总结：
+xml.id<---->mysqltable.id<------>servercode.cmdvalue
+xml.lotteryId<---->servercode.typ<-n---1->servercode.cmdvalue
+
+2014年10月24日10:29:56
+
+
+
+2.清空包
+//clearpack name=郝谷离 zone=5 type=1（主包）

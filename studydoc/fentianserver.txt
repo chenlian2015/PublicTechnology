@@ -1,0 +1,10 @@
+1.config.xml
+配置了各个程序的ip的端口，其他服务需要使用这些ip端口来链接服务
+
+2.loginzonelist.xml
+决定了浏览器url地址访问参数
+<zone id="4"/>
+对应
+http://192.168.1.205/index15.html?zone=4
+
+3.taskServer\hPayMS端口和根目录下jishi端口注意下
