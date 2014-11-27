@@ -1,0 +1,25 @@
+
+一.什么情况不会弹警告，如果下面5个条件都不满足则会弹
+1.勾选了 Settings:Downloads: Ask where to save each file before downloading
+2.直接冲地址栏输入下载文件路径  
+3.文件类型被用户设定为自动打开类型 
+4.有用户手势（通过鼠标等方式点击超链接）&& 曾经访问过（以晚上24:00为界限） 注释：如果通过设置计算机系统时间方式来达到效果，需要重启chrome
+5.勾选了Settings:Privacy: Enable phishing and malware protection 
+
+
+二.什么情况会弹严重警告（红色ICON标记）
+1.勾选了Settings:Privacy: Enable phishing and malware protection 
+&& 在下载完毕5秒钟内完成了严重，且验证结果为危险不可信
+
+eg.测试地址：http://dl.pconline.com.cn/download/352452.html
+
+
+三.什么情况在点击下载链接时候，不开启下载，直接跳转到安全警告页
+1.勾选了Settings:Privacy: Enable phishing and malware protection 
+&& http下载地址在google本地安全哈希库中标记为危险
+
+
+
+四.
+为何昨天访问过，结合用户手势，下载exe文件可不发出警告问题？
+已发邮件给chromium该代码的作者pkasting@chromium.org，时我继续分析原因与在google查询。
