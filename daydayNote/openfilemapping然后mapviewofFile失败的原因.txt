@@ -1,0 +1,42 @@
+1.SUCCESS
+var map_handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), name.c_str());
+
+....
+
+var handle = MapViewOfFile(map_handle, FILE_MAP_ALL_ACCESS , 0, 0, 0)
+
+*handle = 10;
+
+UnMapViewOfFile(map_handle);
+
+getchar();
+
+2.1FAILURE
+var map_handle = OpenFileMapping(PAGE_READWRITE, false, name.c_str())
+
+....
+
+var handle = MapViewOfFile(map_handle, FILE_MAP_ALL_ACCESS , 0, 0, 0) //returns null
+
+var out = *handle;
+
+getchar();
+
+2.2SUCCESS
+var map_handle = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), name.c_str());
+
+....
+
+var handle = MapViewOfFile(map_handle, FILE_MAP_ALL_ACCESS , 0, 0, 0) //returns null
+
+var out = *handle;
+
+getchar();
+//----------------------------------------------Because----------------------------
+Simple things to be aware of from the very start:
+
+Error code 5: ERROR_ACCESS_DENIED "Access is denied."
+Error code 183: ERROR_ALREADY_EXISTS "Cannot create a file when that file already exists."
+ERROR_ALREADY_EXISTS is a documented behavior and is an indication of scenario that you do receive handle, but it is a handle to already existing object, not created.
+
+The problem with not working OpenFileMapping is around its first argument: the API function expects values/flags from another enumeration, it takes FILE_MAP_* values and not PAGE_*. Incorrect argument results in failure to open you the mapping you want.

@@ -1,0 +1,87 @@
+1.2014Äê12ÔÂ2ÈÕ10:25:52
+A    D:\c\src\third_party\WebKit\LayoutTests\fast\xpath\4XPath\Core\test_step-expected.txt
+A    D:\c\src\third_party\WebKit\LayoutTests\fast\xpath\4XPath\Core\test_boolean_expr-expect
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 8.5 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 11.0 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 14.3 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 18.6 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 24.1 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 31.4 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Sleeping 40.8 seconds and retrying....
+
+________ running 'svn update http://src.chromium.org/blink/trunk@180790 D:\c\src\third_party
+Skipped 'http://src.chromium.org/blink/trunk'
+svn: PROPFIND of '/blink/!svn/bc/19963/trunk/LayoutTests/fast/xpath/4XPath/Core/test.js': 20
+Syncing projects:  18% (17/91) src/third_party/WebKit
+
+src/testing/gmock (ERROR)
+----------------------------------------
+[6:20:53] Started.
+[6:20:55]
+[6:20:55] running 'git -c core.deltaBaseCacheLimit=512m clone --no-checkout --progress https
+mjf' in 'D:\c'
+[6:20:56] Cloning into 'D:\c\src\testing\_gclient_gmock_ouumjf'...
+[6:20:59] fatal: unable to access 'https://chromium.googlesource.com/external/googlemock.git
+[6:21:22] Cloning into 'D:\c\src\testing\_gclient_gmock_ouumjf'...
+[6:21:22] fatal: unable to access 'https://chromium.googlesource.com/external/googlemock.git
+[6:21:23] Cloning into 'D:\c\src\testing\_gclient_gmock_ouumjf'...
+[6:21:44] fatal: unable to access 'https://chromium.googlesource.com/external/googlemock.git
+[6:21:47] Cloning into 'D:\c\src\testing\_gclient_gmock_ouumjf'...
+[6:21:47] fatal: unable to access 'https://chromium.googlesource.com/external/googlemock.git
+Traceback (most recent call last):
+  File "C:\workspace\depot_tools\gclient_scm.py", line 833, in _Clone
+    self._Run(clone_cmd, options, cwd=self._root_dir, retry=True)
+  File "C:\workspace\depot_tools\gclient_scm.py", line 1077, in _Run
+    return gclient_utils.CheckCallAndFilter(cmd, env=env, **kwargs)
+  File "C:\workspace\depot_tools\gclient_utils.py", line 526, in CheckCallAndFilter
+    rv, args, kwargs.get('cwd', None), None, None)
+CalledProcessError: Command git -c core.deltaBaseCacheLimit=512m clone --no-checkout --progr
+gmock_ouumjf returned non-zero exit status 128 in D:\c
+----------------------------------------
+Traceback (most recent call last):
+  File "C:\workspace\depot_tools\\gclient.py", line 2014, in <module>
+    sys.exit(Main(sys.argv[1:]))
+  File "C:\workspace\depot_tools\\gclient.py", line 2002, in Main
+    return dispatcher.execute(OptionParser(), argv)
+  File "C:\workspace\depot_tools\subcommand.py", line 245, in execute
+    return command(parser, args[1:])
+  File "C:\workspace\depot_tools\\gclient.py", line 1780, in CMDsync
+    ret = client.RunOnDeps('update', args)
+  File "C:\workspace\depot_tools\\gclient.py", line 1297, in RunOnDeps
+    work_queue.flush(revision_overrides, command, args, options=self._options)
+  File "C:\workspace\depot_tools\gclient_utils.py", line 967, in run
+    self.item.run(*self.args, **self.kwargs)
+  File "C:\workspace\depot_tools\\gclient.py", line 699, in run
+    file_list)
+  File "C:\workspace\depot_tools\gclient_scm.py", line 160, in RunCommand
+    return getattr(self, command)(options, args, file_list)
+  File "C:\workspace\depot_tools\gclient_scm.py", line 389, in update
+    self._Clone(revision, url, options)
+  File "C:\workspace\depot_tools\gclient_scm.py", line 841, in _Clone
+    if os.listdir(tmp_dir):
+WindowsError: [Error 3] : 'D:\\c\\src\\testing\\_gclient_gmock_ouumjf/*.*'
