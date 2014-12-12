@@ -1,0 +1,5 @@
+1.
+Set new handler function
+Sets new_p as the new-handler function.
+
+ The new-handler function is a function which is called by the default allocation functions (operator new and operator new[]) when they fail to allocate storage.

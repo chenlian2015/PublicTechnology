@@ -1,0 +1,238 @@
+﻿关于消息和消息队列
+不想基于MS-DOS的应用程序，基于Windows的程序是事件驱动的。他们不做任何显示调用来获取输入。而是通过等待系统传递给他们。
+
+系统为应用程序传递所有输入到程序中的不同窗口。每个窗口都有一个称为窗口过程的函数，用于处理所有到该窗口的输入。窗口处理过程处理输入，并将控制返回给系统。
+
+如果一个顶层窗口停止响应消息超过两秒，系统将会认为该窗口为非响应状态。在这种情况下，系统将隐藏该窗口并用拥有同样Z顺序，位置，尺寸和可视化属性的ghost窗口替代该窗口。这种情况下，允许用户移动它，或者改变他的尺寸，甚至关闭应用程序。然后，这也是仅仅可以做的动作，因为应用程序现在是不响应的。当在调试状态下，系统不会产生ghost窗口。
+
+这个段落，讨论如下主题：
+windows消息
+系统以消息的形式传递输入到窗口的处理过程。系统和应用程序均可产生消息。系统在每次输入事件时，产生一个消息，比如，当用于敲击，移动鼠标或者点击滚动条一类的控件。应用程序引起系统改变也会导致系统产生消息，比如一个应用程序改变了系统的字体资源池或者改变了他自己窗口的大小。一个应用程序可以产生这样的消息，该消息可以引导他的窗口直接执行任务或者和其他应用程序的窗口进行交互。
+
+消息分类：
+系统定义消息
+当系统和应用程序交互时，系统发送系统消息，以控制应用程序的操作以及给程序传递输入或者其他消息。应用程序也可以发送系统消息，应用程序通常用这些消息来控制通过预先注册的窗口类创造的窗口的行为。
+
+消息常量标记指定了其所属系统预定义消息种类。前缀确定可以翻译或者处理的消息种类。如下。
+AMB/ABN ===application desktop toolbar
+acm/acn ===animation control
+cb/cbn  ===combobox control
+ccm ===generatl control
+cdm ===common dialog box
+dfm ===default contex menu
+dl ===drag list box
+sb ===status bar
+tvm/tvn ===tree view contro
+udm/udm === up-down controm
+wm === general
+......
+tcm/tcn === tab control
+{
+Clipboard Messages Clipboard Notifications Common Dialog Box Notifications Cursor Notifications Data Copy Message Desktop Window Manager Messages Device Management Messages Dialog Box Notifications Dynamic Data Exchange Messages Dynamic Data Exchange Notifications Hook Notifications Keyboard Accelerator Messages Keyboard Accelerator Notifications Keyboard Input Messages Keyboard Input Notifications Menu Notifications Mouse Input Notifications Multiple Document Interface Messages Raw Input Notifications Scroll Bar Notifications Timer Notifications Window Messages Window Notifications 
+}
+
+大体上，windows消息覆盖了一个比较宽的范围，包括鼠标键盘，菜单，对话框输入，窗口创建管理，DDE动态数据交换
+
+
+应用程序定义的消息
+应用程序可以创建消息，其自身窗口可以使用，也可以用于和其他进程进行交互。
+
+消息标记符的值应用如下：
+1.系统保留了0x0000-0x03ff(即wm_user-1),应用程序不可以使用这些值用于私有消息
+2.0x0400(WM_USER)-0x7fff可以用于私有消息
+3.如果应用程序在4.0系统上，你可以使用0x8000(wm_app)-0xbfff于私有消息
+4.RegisterWindowMessage返回的值在0XC000-0XFFFF之间。这个函数的返回值，可以避免其他进程用同样值而引起的冲突
+
+消息路由
+使用使用两种方式来窗口过程消息的路线：post类消息是通过先进先出的消息队列方式，消息队列是临时存储消息的系统定义内存对象，以及sending类消息直接到达窗口过程。
+
+队列消息1
+系统在同一时间可以显示任意数量的窗口。为了路由鼠标键盘输入到正确的窗口，系统采用了消息队列。
+
+系统维护了一个系统消息队列，并为每个GUI线程维护了而一个线程专有消息队列。为了避免为非GUI线程过多创建消息队列，所有线程在创建时没有消息队列。系统仅仅在线程第一次发起某个专门用户函数时，创建线程消息队列；没有GUI函数调用将引起消息队列的创建。
+
+未懂：
+The system creates a thread-specific message queue only when the thread makes its first call to one of the specific user functions; no GUI function calls result in the creation of a message queue.
+
+队列消息2
+任何时候，用户移动鼠标，点击按钮或者敲击键盘，鼠标或者键盘驱动将转换这些输入为消息，并将它们放到系统消息队列中。系统在检测它们的目窗口时，同时从系统消息队列中移除它们。然后将他们发送到消息相关窗口的窗口创建线程。线程从它们的消息队列中接收所有鼠标和键盘消息。线程从它们的队列中删除消息，并指引系统将它们发送到正确的窗口过程进行处理。
+
+
+除了WM_PATIN,WM_TIMER,WM_QUIT消息外，系统一直将它们发送到消息队列的末尾，以确保输入消息的FIFO序列，仅当消息对用中没有其他消息事后，WM_PATIN,WM_TIMER,WM_QUIT才被向前推至窗口处理过程。再就是，多个WM_PAINT消息将被合并为一个，确定所有客户端无效区域到一个单独的区域。合并WM_PATINT就是为了减少窗口冲回客户区内容的次数。
+
+从消息队列中删除一个消息后，应用程序将用DispatchMessage函数direct系统发送这个消息到窗口处理过程以紧凑处理。DispatchMessage没有发送消息位置和时间到窗口过程，应用程序可以通过GetmessageTime和GetMessagePos函数。
+
+当消息队列中没有消息的时候，线程可以使用WaitMessage函数来将控制器交给其他线程，这个函数暂停线程，知道一个新消息到来，该函数才返回。
+
+你也可以调用SetMessageExtraInfo来为当前消息队列附加一个值，通过GetMessageExtraInfo来获取这个值。
+
+非队列消息
+绕过了系统和线程消息队列，非队列消息直接发送至窗口过程。系统典型发送非队列消息来通知一个窗口，一个事件影响了它。例如，当用户激活一个新窗口，系统发送给窗口 WM_ACTIVATE, WM_SETFOCUS, and WM_SETCURSOR消息。这些消息通知窗口它已经被激活了，键盘输入正指向该窗口，鼠标光标已经移至了窗口边框内。当应用程序调用某些系统函数时，也会窗口非队列消息，比如，应用程序在调用SetWindowPos时，系统将发送WM_WINDOWPOSCHANGED消息。
+
+有些消息发送非队列消息：BroadcastSystemMessage, BroadcastSystemMessageEx, SendMessage, SendMessageTimeout, and SendNotifyMessage. 
+
+消息处理
+多线程应用程序，会在每个创建了窗口的线程包含一个消息队列。
+
+
+MSG msg;
+BOOL bRet;
+
+while( (bRet = GetMessage( &msg, NULL, 0, 0 )) != 0)
+{ 
+    if (bRet == -1)
+    {
+        // handle the error and possibly exit
+    }
+    else
+    {
+        TranslateMessage(&msg); 
+        DispatchMessage(&msg); 
+    }
+}
+一个应用程序可以通过调用PostQuitMessage来结束其自身的消息循环，响应应用程序主窗口的WM_DESTROY消息，就比较典型。
+
+PostMessage发送一个NULL窗口句柄的消息，该消息将会被放在当前线程消息队列中，应用程序必须处理这个消息。PostMessage也可以通过HWND_TOPMOST 句柄来给所有顶层窗口发送消息。
+
+PostMessage一直能够成功发送消息，通常是一个错误的假设，比如消息队列是满的。一个应用程序应该核查PostMessage的返回值。如果失败了，需要重新发送消息。
+
+SendMessage通常用户父子窗口之间的交互。
+
+SendMessageCallback函数发送一个消息，并立即返回，窗口过程在处理完这个消息后，系统将调用指定的回调函数。该回调函数的具体，请看SendAsyncProc
+
+偶尔，你可能想向所有顶层窗口发送消息。例如，应用程序改变了时间，可以通过SendMessage，并制定HWND_TOPMOST，发送WM_TIMECHANGE.你也可以通过BroadcastSystemMessage函数，并给lpdwRecipients参数制定BSN_APPLICATIONS
+
+消息死锁
+1.SendMessage会等待窗口过程处理完毕后才返回，如果窗口过程此时所在线程激昂控制权放弃，那么僵早晨死锁。
+2.如果接收线程附加到了和发送线程同一个消息队列，也将导致应用程序死锁的发送
+
+注意，正在接收消息的线程，不应该显示放弃控制权；调用下面函数将引起线程隐私放弃控制权。
+DialogBox 
+•DialogBoxIndirect 
+•DialogBoxIndirectParam 
+•DialogBoxParam 
+•GetMessage 
+•MessageBox 
+•PeekMessage 
+•SendMessage 
+
+为了避免潜在死锁，考虑使用SendNotifyMessage或者SendMessageTimeout。要不然，窗口过程可以通过InSendMessage或者InSendMessageEx检测其接收到的消息是否来自其他线程.在处理一个消息时，在调用上面列表中任何函数前，窗口过程应该调用InSendMessage(Ex).如果返回TRUE，窗口过程必须在yeild前，调用ReplyMessage函数。
+
+系统广播消息-略
+
+
+
+总结：
+1.消息分为系统定义消息和用户自定义消息，其ID值皆有自己的范围。
+2.每个线程默认是没有消息队列的，线程只有在第一次调用用户接口时（比如创建窗口），系统才为其创建消息队列。
+3.系统自身维护一个系统消息队列，然后还为每个GUI线程线程维护一个线程专门消息队列。
+4.鼠标、键盘等驱动，首先将事件转换为消息放置在系统消息队列中，然后系统又通过窗口来确定将其放入到哪个线程消息队列中。
+5.线程消息循环取出消息，进行处理，将消息再派发给系统，系统调用消息对应的窗口过程。
+6.PostMessage不一定成功，比如队列是满的。
+7.避免消息死锁，比如接收消息的窗口过程，在弃权前，需要检测消息是否发自其它线程。否则其它线程将长时间等待。其实我感觉这里不能成为死锁嘛，毕竟还是可能再执行的，只是时间长短而已。
+8.需要注意wm_paint,wm_timer,wm_quit等特殊消息
+9.系统预定义消息其实大都是那些控件消息，通知消息，系统广播消息等等。
+
+
+消息相关函数：
+---
+DispatchMessage
+
+LONG  DispatchMessage( 
+  const MSG* lpmsg 
+);
+1.该函数将消息，通过系统派发给窗口过程
+2.如果是一个定时器消息，lParam参数不是空, lParam指向一个函数地址，被调用的将是这个函数，而非窗口过程
+--- 
+
+ GetMessage
+应用程序使用该函数返回值来决定是否终止消息循环，并退出程序。
+该函数将获取和hWnd或者其子窗口相关的消息。
+---
+ DWORD GetMessagePos(void);
+ 该函数返回消息x,y坐标，在多重monitor下，可能有负值。
+ ---
+
+ GetMessageQueueReadyTimeStamp
+ 获取线程最近一次准备处理一个消息的系统时间（GetTickCount）
+ ---
+ 
+
+ GetMessageSource
+ MSGSRC_SOFTWARE_POST表面键盘消息来自software（postmessage标记为software）. MSGSRC_HARDWARE_KEYBOARD 表面消息来自keyboard. MSGSRC_UNKNOWN 消息来源未知
+---
+DWORD GetQueueStatus(
+  UINT flags
+);
+在消息队列中的消息的类型 
+flags为要检测的消息类型。
+返回值得高字节表示当前在消息队列中的消息类型。低字节表示从上次GetQueueStatus，GetMessage或者PeekMessage后被加入队列的消息类型。
+--- 
+ InSendMessage
+用于判断当前窗口过程所处理的消息，是否来自其他线程的SendMessage调用。
+ ---
+ PeekMessage
+1.该函数核查线程消息队列中是否有消息，并将消息放在参数结构体中
+2.如果hWnd参数=-1，则只返回hWnd=NULL的消息，这种消息来自PostThreadMessage
+3.参数wRemoveMsg需要注意
+4.如果应用程序正在创建顶层窗口时调用PeekMessage,将导致窗口窗口被创建在Z-Order的最后。你需要在PeekMessage后，显式调用SetForegroundWindow。如果应用程序以及有一个前置窗口了，那么新窗口将被前置。
+---
+ PostMessage
+ 应用程序要用HWND_BROADCAST进行程序间的交互，消息应该获取于RegisterWindowMessage()
+ 
+ 如果发送消息低于WM_USER范围，到异步消息队列函数（PostMessage、SendNotifyMessage），消息参数不应该包含指针，不然的话，操作将失败。该函数将在接收线程有机会处理该消息前返回，发送者将释放刚刚用到的内存。
+ ---
+
+ PostQuitMessage
+ 该函数只是简单表明被请求终止的线程将会终止。接收WM_QUIT的线程，应该终止消息循环，并将控制权交给系统。返回给系统的退出值，一定是WM_QUIT的wParam参数
+---
+ 
+BOOL PostThreadMessage(
+  DWORD idThread, 
+  UINT Msg, 
+  WPARAM wParam, 
+  LPARAM lParam 
+); 
+ 
+接收消息的线程，通过GetMessage/PeekMessage来获取消息，hWnd成员将会是空
+ 
+---
+ RegisterWindowMessage
+ 同一字符串，注册的值，在整个系统中是唯一的
+ 
+---
+ SendMessage
+非消息队列方式，直接调用窗口过程，系统立即切换到接收线程执行，发送线程锁住，知道接收线程处理完毕
+ ----
+
+ SendMessageTimeout
+ 该函数通过调用窗口过程的方式发送消息，如果窗口属于不同线程，SendMessageTimerout将知道消息处理完毕才返回或者指定的超时已经过去，如果窗口就在当前线程，则直接调用窗口过程，并忽略time-out超时
+--- 
+
+ SendNotifyMessage
+ 如果窗口创建于属于发送消息的线程，则调用窗口过程，并等待窗口过程处理完毕该消息。如果是不同线程，则将消息传递到窗口过程，并立即返回，不等待窗口过程的消息处理过程。
+ 
+--
+ TranslateMessage
+1.将虚拟键消息转换为字符消息，然后将字符消息发送到调用线程的消息队列中，该字符消息将在下次调用GetMessage或者PeekMessage消息的时候获取到。
+2.WM_(SYS)KEYDOWN/UP--->WM_(SYS)_CHAR
+3.如果应用程序为了其他目的，处理虚拟键消息，那么就不应该调用TranslateMessage.与一个实例，应用程序不应该在TranslateAccelerator函数返回非0值时调用TranslateMessage
+
+---------
+BOOL WINAPI DestroyWindow(
+  _In_  HWND hWnd
+);
+
+1.
+Destroys the specified window. The function sends WM_DESTROY and WM_NCDESTROY messages to the window to deactivate it and remove the keyboard focus from it. The function also destroys the window's menu, flushes the thread message queue, destroys timers, removes clipboard ownership, and breaks the clipboard viewer chain (if the window is at the top of the viewer chain).
+
+If the specified window is a parent or owner window, DestroyWindow automatically destroys the associated child or owned windows when it destroys the parent or owner window. The function first destroys child or owned windows, and then it destroys the parent or owner window.
+
+DestroyWindow also destroys modeless dialog boxes created by the CreateDialog function.
+
+
+------
+一直不知道NC是什么意思，原来是nonclient的缩写
+WM_NCDESTROY message
+Notifies a window that its nonclient area is being destroyed. The DestroyWindow function sends the WM_NCDESTROY message to the window following the WM_DESTROY message.WM_DESTROY is used to free the allocated memory object associated with the window.
+The WM_NCDESTROY message is sent after the child windows have been destroyed. In contrast, WM_DESTROY is sent before the child windows are destroyed.
