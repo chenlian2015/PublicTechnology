@@ -1,0 +1,23 @@
+This guide will help you design Explorer Bars to add to the Windows Internet Explorer user interface.
+该指南将帮助你设计Explorer条，其将被添加到浏览器的用户界面
+General Guidelines
+Because Explorer Bars become a permanent part of the end user's browser, all Explorer Bars should add value to the user's overall Web experience and not just to a particular Web site.
+因为Explorer bar将变成用户浏览器的永久部分，所有的Explorer bar应该怎家整体用户用户体验而不是某个特别的网站
+For example, an Explorer Bar should never be used to replace or augment a Web site's frameset. Using Explorer Bars this way only affects the user's experience for a single site and does not improve overall Web browsing.
+例如，一个Explorer bar不应该用来替换或者增加一个网站的框架。这样使用Explorer Bars只会影响用户某个网站的体验，而不能改变整体浏览体验。
+An example of a good way to use an Explorer Bar would be to display information that the user is interested in, like stock prices, using a horizontal Explorer Bar. Instead of having to navigate to an investment Web site, enter the stock symbols, and download the results at various times while the market is open, you could design an Explorer Bar that saves the user's favorite stock symbols, periodically downloads the data, and displays it. The user is then free to browse other sites on the Internet without having to stop and periodically check the stock prices.
+一个实例，一个好的方式使用Explorer Bars，将显示用户感兴趣的信息，比如股票价格，使用横向Explorer Bars。而不是不得不浏览一个问卷调查网站，输入股票标记，在开盘后下载结果，并显示它。用户然后就可以浏览其他网站而不必停下来定期查股票价格。
+Vertical or Horizontal
+Now that you have an idea about how to improve the user's Web browsing experience, it's time to decide whether to use a vertical or horizontal Explorer Bar. The final decision is yours, but here are some general guidelines:
+现在，你有一个关于如何改善用户浏览体验的主义，该讨论你应该用一个横向还是纵向的Explorer Bar了，有如下建议：
+Vertical Explorer Bars should be used to display lists of items that can be navigated to.
+纵向Explorer Bars应该用来显示列表项目
+Vertical Explorer Bars are designed to improve the user's experience when navigating lists of information, like search results, lists of links, or other navigation UI. The Microsoft Internet Explorer 5 standard user interface has three vertical Explorer Bars: Search, Favorites, and History.
+纵向Explorer Bars设计用来显示列表信息，比如搜索结果，连接列表，以及其他浏览UI。IE5有3个纵向Explorer Bars：搜索，最爱，历史
+Horizontal Explorer Bars should be used to display information or provide communication functionality.
+横向Explorer Bars用于显示信息和提供交互功能
+Horizontal Explorer Bars allow for a more natural display of text and edit fields. Any display of textual information about an item, of meta data about the page the user is currently on, or of features that require a lot of reading or typing will work well in a horizontal Explorer Bar. Other applications, like chat programs, annotations of Web pages, or threaded discussions, could also work well in a horizontal Explorer Bar.
+横向Explorer Bars允许更多的文字显示和编辑器区域。
+Appearance
+Because users will be familiar with how the default Explorer Bars in Internet Explorer look, feel, and operate, there is a definite advantage to following the style and behavior of existing Explorer Bars. Using system colors whenever possible and reusing familiar user interface elements of the default Explorer Bars will help users feel that your Explorer Bar is a part of Internet Explorer, not just something that was added on as an afterthought.
+因为用户熟悉IE默认的Explorer Bars外观，感觉，操作，下面的Explorer Bars样式和行为将有一定的好处。无论何时，尽可能使用系统颜色，重用默认的Explorer Bars界面元素将有助于用户感觉到你的Explorer Bars是浏览器的一部分，而不是一些后添加产品

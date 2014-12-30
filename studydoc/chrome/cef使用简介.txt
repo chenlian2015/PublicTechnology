@@ -1,0 +1,41 @@
+Introduction
+
+This tutorial explains how to create a simple application using CEF3. It references the cefsimple example project which is included with trunk revision 1535 and newer. For complete CEF3 usage information visit the GeneralUsage Wiki page. 
+这个指南描述了如何使用CEF3创建一个简单的应用程序。包括cefsimple用例工程，其包含cef的1535版本以及更新。需要完整CEF3使用资料，访问GeneralUsage的wiki页（http://code.google.com/p/chromiumembedded/wiki/GeneralUsage）。
+Getting Started
+
+Begin by downloading a binary distribution for your platform from http://cefbuilds.com. For the purposes of this tutorial download the 1750 branch or newer. Currently supported platforms include Windows, Linux and Mac OS X. Each binary distribution contains all files necessary to build a particular version of CEF3 on a particular platform. See the included README.txt file or the Getting Started section of the GeneralUsage Wiki page for a detailed description of binary distribution contents. 
+从http://cefbuilds.com下载二进制发布文件开始，当前指南要求下周1750或者更新版本。目前支持的平台包括windows，linux,Mac OS X,每个二进制发布包含所有CEF3必须文件。请看ReadMe.txt文件，或者从Generaluseage wiki段落开始，获取详细的二进制发布描述。
+Building the Included Project
+编译被包含的工程
+Applications based on CEF binary distributions can be built using standard platform build tools. This includes Visual Studio on Windows, Xcode on Mac OS X and gcc/make on Linux. Each platform has a slightly different build process and requirements. 
+基于CEF二进制的应用程序可以使用平台标准编译工具。包括Windows上的Visual Studio，Mac上的Xcode,Linux上的GCC/make,每个平台上的编译有略微的不同。
+Windows
+
+Follow these steps to build the cefsimple application on Windows: 
+1.Open the solution file appropriate to your version of Visual Studio. For example, when using Visual Studio 2010 open the cefclient2010.sln solution file. 
+打开解决和你Visual Studio版本适合的解决方案文件。
+2.If you downloaded a 64-bit build make sure to select the 64-bit platform in Configuration Manager. 
+如果你下载的是64位，请确保在配置管理器中选择64-bit平台
+3.Build the “cefsimple” target. 
+编译
+4.If the build is successful an “out/Debug” directory (or “Release” if you selected the release configuration) will be created. 
+5.Run “out/Debug/cefsimple.exe” to verify that it works. 
+运行out/Debug/cefsimple.exe，验证器是否工作
+
+Linux
+
+Follow these steps to build the cefsimple application on Linux: 
+1.Make sure you’re using one of the supported Linux distributions. This currently includes Debian Wheezy, Ubuntu Precise, and related Linux distributions. Newer versions will likely also work but may not have been tested. 
+2.Install the required dependencies. This includes the build-essential, libgtk2.0-dev and libgtkglext1-dev packages (note that libgtkglext1-dev is only required for the cefclient example). 
+3.Build the “cefsimple” target by running “./build.sh Debug”. 
+4.If the build is successful an “out/Debug” directory (or “Release” if you selected the release configuration) will be created. 
+5.Run “./out/Debug/cefsimple” to verify that it works. 
+
+Mac OS X
+
+Follow these steps to build the cefsimple application on OS X: 
+1.Open cefclient.xcodeproj using Xcode 4.x (Xcode 5.x is not yet tested or supported). 
+2.Build the “cefsimple” target. 
+3.If the build is successful an “xcodebuild/Debug” directory (or “Release” if you selected the release configuration) will be created. 
+4.Run “open out/Debug/cefsimple.app” to verify that it works. 

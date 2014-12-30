@@ -1,0 +1,83 @@
+Introduction
+CEF简介
+
+The Chromium Embedded Framework (CEF) is a simple framework for embedding Chromium-based browsers in other applications. It is a BSD-licensed open source project founded by Marshall Greenblatt in 2008 and based on the Google Chromium project. Unlike the Chromium project itself, which focuses mainly on Google Chrome application development, CEF focuses on facilitating embedded browser use cases in third-party applications. CEF insulates the user from the underlying Chromium and Blink code complexity by offering production-quality stable APIs, release branches tracking specific Chromium releases, and binary distributions. Most features in CEF have default implementations that provide rich functionality while requiring little or no integration work from the user. There are currently over 100 million installed instances of CEF around the world embedded in products from a wide range of companies and industries. A partial list of companies and products using CEF is available on the CEF Wikipedia page. Some use cases for CEF include: 
+Chromium嵌入式框架对于嵌入chromium浏览器的其他应用程序来说是一个简单的框架。。其遵循建立于2008年Marshall Greenblatt 的BSD许可协议。基于Google Chromium工程。不像Chromium工程本身，主要集中开发Google Chrome应用程序，CEF聚焦于使用第三方嵌入浏览器的应用程序， 通过提供稳定的API，CEF将chromium底层以及复杂的Blink代码隔离开来，分支发布紧跟chromium发布，以及二进制发布。大多数CEF的特性都有默认的实现，其功能了丰富的功能，较少甚至没有集成工作需要去做。目前全球有超过1亿CEF运行实例，其嵌入在广泛公司和企业的嵌入式产品中。使用CEF的部分公司和产品列表可以在Wikipedia页上找到。一些CEF的如下使用情况
+•Embedding an HTML5-compliant Web browser control in an existing native application. 
+嵌入HTML5浏览器在现有的本地应用程序中。
+•Creating a light-weight native “shell” application that hosts a user interface developed primarily using Web technologies. 
+创建一个轻量级sehll应用程序，其包含一个用网页开发技术开发的界面宿主。
+•Rendering Web content “off-screen” in applications that have their own custom drawing frameworks. 
+渲染网页内容
+•Acting as a host for automated testing of existing Web properties and applications. 
+作为一个自动化测试网页属性和应用程序的主角
+
+CEF supports a wide range of programming languages and operating systems and can be easily integrated into both new and existing applications. It was designed from the ground up with both performance and ease of use in mind. The base framework includes C and C++ programming interfaces exposed via native libraries that insulate the host application from Chromium and Blink implementation details. It provides close integration between the browser and the host application including support for custom plugins, protocols, JavaScript objects and JavaScript extensions. The host application can optionally control resource loading, navigation, context menus, printing and more, while taking advantage of the same performance and HTML5 technologies available in the Google Chrome Web browser. 
+CEF支持多种编程语言，可以很简单地集成到新的和现有程序。其设计围绕了性能和易用性两个方面。基本的框架包括c和c++编程接口，通过本地库的方式暴露接口，其隔离了宿主程序和复杂的chromium、Blink实现细节。其在宿主程序（包括对插件、协议、javascript对象以及javascript扩展）和浏览器之间，提供封闭式集成。宿主应用程序可以选择性控制资源加载、浏览、上下文菜单、打印，以及其他功能，同时可以得到和chrome浏览器同样的性能和HTML5支持
+
+Users new to CEF development should start by reading the Tutorial Wiki(http://code.google.com/p/chromiumembedded/wiki/Tutorial) page for an overview of CEF usage and then proceed to the GeneralUsage Wiki page for a more in-depth discussion or architectural and usage issues. Complete API documentation is available here. CEF support and related discussion is available on the CEF Forum. 
+CEF开发，首先应该阅读Wiki指南(http://code.google.com/p/chromiumembedded/wiki/Tutorial)，以浏览CEF使用方式。然后是转入GeneralUsage的wiki页(http://code.google.com/p/chromiumembedded/wiki/GeneralUsage)，以得到深入讨论或者架构和使用中的问题。这里可以得到完整的API文档。在CEF论坛(http://www.magpcss.org/ceforum/)中，有CEF支持，相关讨论
+
+Numerous individuals and organizations contribute time and resources to support CEF development, but more involvement from the community is always welcome. This includes support for both the core CEF project and external projects that integrate CEF with additional programming languages and frameworks (see the "External Projects" section below). If you are interested in donating time to help with CEF development please see the "Helping Out" section below. If you are interested in donating money to support general CEF development and infrastructure efforts please visit the CEF Donations page. 
+很多个人和阻止共享时间和资源支持CEF的开发，但来更多来自社区的参与一直是受欢迎的。这包括对CEF内核工程和外部工程，外部工程用额外编程语言和框架来集成CEF.如果你有兴趣捐赠时间来帮助CEF开发，请看下面“Helping out”段落。如果你想捐钱....
+
+
+
+Binary Distributions
+
+Binary distributions, which include all files necessary to build a CEF-based application, are available on the Downloads page. Automated nightly builds, available from http://cefbuilds.com, include the newest changes but may not be fully tested. Binary distributions are stand-alone and do not require the download of CEF or Chromium source code. Symbol files for debugging binary distributions of libcef can also be downloaded from the above links. 
+二进制发布，其包括便于基于CEF应用程序的的所有文件，可以在下载页上获取。自动化每晚编译，可以从http://cefbuilds.com上面获取，其包括最新的变化，但没有经过充分的测试。二进制发布是独立的，不需要下载CEF或者chromium源码。用于调试二进制的标记文件也可以冲上面的链接中下载
+Release notes for past and current CEF binary distributions are available here.（http://code.google.com/p/chromiumembedded/wiki/ReleaseNotes） 
+以前和当前的CEF发布注释可以在http://code.google.com/p/chromiumembedded/wiki/ReleaseNotes拿到
+
+Source Distributions
+源码发布
+The CEF project is an extension of the Chromium project. CEF maintains development and release branches that track Chromium branches. CEF source code can be downloaded, built and packaged manually or with automated tools. Visit the BranchesAndBuilding Wiki page for more information. 
+CEF工程是Chromium工程的扩展。CEF保持开发和分支发布，其跟随Chromium分支。CEF源码可以下载，编译，人工或者自动化工具方式打包。访问“分支和编译”wiki页（http://code.google.com/p/chromiumembedded/wiki/BranchesAndBuilding）获取更多信息。
+External Projects
+
+The base CEF framework includes support for the C and C++ programming languages. Thanks to the hard work of external maintainers CEF can integrate with a number of other programming languages and frameworks. These external projects are not maintained by CEF so please contact the respective project maintainer if you have any questions or issues. 
+基础CEF框架包括C/C++接口。感谢致力工作于外围的维护者，CEF才可以基础很多其他语言和框框。这些外部工程不是CEF维护，因此如果你有疑问或者问题，请联系相关工程维护者
+•.Net - https://github.com/chillitom/CefSharp 
+•.Net (CEF1) - https://bitbucket.org/fddima/cefglue 
+•.Net/Mono (CEF3) - https://bitbucket.org/xilium/xilium.cefglue 
+•Delphi (CEF1) - http://code.google.com/p/delphichromiumembedded/ 
+•Delphi (CEF3) - http://code.google.com/p/dcef3/ 
+•Go - https://github.com/CzarekTomczak/cef2go 
+•Java - http://code.google.com/p/javachromiumembedded/ 
+•Java - http://code.google.com/p/javacef/ 
+•Python - http://code.google.com/p/cefpython/ 
+
+If you're the maintainer of a project not listed above and would like your project listed here please either post to the CEF Forum or contact Marshall directly. 
+如果你是一个工程维护者，没有列在上面，你可以通过将工程列在这里或者发邮件到CEF论坛（http://www.magpcss.org/ceforum/），或者直接联系Marshall
+Helping Out
+
+CEF is still very much a work in progress. Some ways that you can help out: 
+CEF任然后许多工作在进程中。有一些方式你可以提供帮助
+- Star issues in the CEF issue tracker that are important to you. This helps with development prioritization. 
+星号对你很重要的CEF问题，这将帮助开发次序
+
+- Report any bugs that you find or feature requests that are important to you. Make sure to first search for existing issues before creating new ones. Please use the CEF Forum and not the issue tracker for usage questions. Each CEF issue should: 
+报告BUG，或者对你重要的特性请求。在创建一个新问题前，请首先搜索，确保没有已经存在的问题。请联系CEF论坛，而不是问题的跟踪者。每个CEF问题应该：
+•Include the CEF revision or binary distribution version. 
+包括CEF版本或者二进制版本
+•Include information about your OS and compiler version. 
+包括你的操作系统和编译器版本
+•If the issue is a bug please provide detailed reproduction information. 
+如果问题是一个BUG,请提供详细的再生信息
+•If the issue is a feature please describe why the feature is beneficial. 
+如果问题是一个特性，请详细描述为何这个特性是有益的。
+- Write unit tests for existing functionality. 
+为依据有的功能鞋测试用例
+- Patches are always welcome. View open issues in the CEF issue tracker or search for TODO(cef) in the source code for ideas. 
+一直欢迎补丁。
+If you would like to submit patches for CEF please follow the below guidelines: 
+如果你想提交补丁，请按照如下指示：
+- Create or find an appropriate issue for each distinct bug, feature or change. 
+为每个不同的BUG,特性或者改变，创建或者发现一个恰当的发行
+- Create a patch with your changes and attach it to the CEF issue. Patches should be against the current CEF trunk revision unless explicitly fixing a bug in a CEF branch. Patches should: 
+创建一个你自己变化的补丁，将其和CEF发行绑定。补丁应该针对当前CEF主分支，除非显示在CEF修正一个BUG.补丁应该：
+•Follow the style of existing CEF source files. In general CEF uses the Chromium coding style. 
+随CEF源码风格，通常CEF使用Chromium代码风格
+•Not include unnecessary changes. 
+不要包含不需要的改变

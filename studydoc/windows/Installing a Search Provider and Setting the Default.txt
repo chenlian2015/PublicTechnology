@@ -1,0 +1,77 @@
+Installing a Search Provider and Setting the Default
+
+Windows Internet Explorer 8 extends a rich searching experience by offering users the option to install multiple search providers. As a user installs search providers, each provider has a chance to set itself as the default provider. Internet Explorer 8 has a new mandatory（强制性） Search Provider Default user experience that keeps the user in control of their preferred search provider.
+IE8通过提供用户，选择更多搜索，来丰富的搜索体验。作为用户，安装搜索，每个搜索提供方有机会设置其为默认搜索。IE8有一个新的强制性的默认搜索提供用户体验，其可以保持用户控制他们喜欢的搜索。
+This article addresses best practices for setting a default search provider as you write your software to install your service.
+该文章目是，设置你写的软件为默认搜索提供方以安装你的服务，的最佳实践
+In Internet Explorer 7, any program can write the GUID of their search provider to the DefaultScope registry key in HKCU\Software\Microsoft\Internet Explorer\SearchScopes to set the default search provider. Multiple programs can write (and monitor) this registry key, resulting in a confusing experience for the user when multiple programs write to this registry key and issue notification of changes.
+在IE7，所有程序可以将搜索的GUID写到HKCU\Software\Microsoft\Internet Explorer\SearchScopes注册表的DefaultScope中。多个程序都可以写这个注册表项，导致一个困惑的用户体验。
+To keep the user in control of their browser and their search preference, Internet Explorer 8 informs the user when a program wants to change the search default.
+为了保证用户对浏览器以及他们搜索优先项的控制，IE8将会在任何程序改变默认搜素时通知用户。
+In Internet Explorer 8, writing the DefaultScope registry key still works, but (to keep the user in control) the user will see a dialog (the next time they open Internet Explorer) that informs them of a request to change the search default. The dialog box looks like this:
+写注册表的方式，在IE8中仍然有效，但是，下次打开浏览器的时候，用户将看到一个对话框，其通知有一个请求想改变默认搜素。对话框如下：
+
+图-1
+
+
+Figure 1: In this example, the user had the Fabrikam Search service as their default, and the Contoso Search software wrote a new setting to the DefaultScope registry key.
+图-1：在这个例子中，用户默认的搜索是Fabrikam，Contoso是被写到注册表的新的搜素
+This dialog informs the user of the request, but does not give proper attribution to the source of the request.
+这个对话框通知了用户，但没有给请求者适当的归宿。
+We recommend that all software use the IOpenServiceManager APIs on Internet Explorer 8 and later to install a search provider and request that the user set it as their default. These APIs allow software to manage their search providers in a supported way that will not conflict with other software already installed on the user's machine. When software requests a search default change using these APIs, the source of the request is properly attributed in the dialog:
+我们建议在IE8上，所有软件使用IOpenServiceManager，然后按照一个搜索，然后请求用户将其设置为默认搜索。这些API允许软件通过支持的方式（其将不二和其他已经按照到用户机器上的软件冲突），管理他们的搜索。当软件请求设置默认搜素时，调用这些API,请求源将属性恰当显示在对话框中。
+
+图-2
+
+Figure 2: In this example, the software requests a search default change using the recommended SetDefault APIs and clear attribution is displayed. In this case, it is the Contoso.com Internet Search software.
+图-2:这个例子，软件请求改变默认搜素，使用了推荐的SetDatault，清理属性也被显示。在这种情况下，其是Contoso.com搜素软件。
+This dialog is displayed as soon as the SetDefault API is called.
+SetDefault被调用后，对话框立即显示
+We strongly recommend that your software only use methods detailed in this article when setting a search default. Attempts to circumvent the Search Provider Default dialogs is considered inappropriate behavior.
+当设置默认搜素时，我们强烈推荐你的软件只是用我们在文章中推荐的方式。
+The following code sample shows how to install a search provider and request that the user set it as the default.试图避开搜素默认对话框被认为是不恰当的行为。
+
+
+The following code sample shows how to install a search provider and request that the user set it as the default.
+下面代码展示了如哈安装一个搜素，并发起让用户改变默认搜素的请求
+
+#include <windows.h>
+#include <atlbase.h>
+#include <openservice.h>
+
+    HRESULT hr = E_FAIL;
+    BOOL fComInitialized = FALSE;
+
+    if (S_OK == CoInitialize(NULL))
+    {
+        fComInitialized = TRUE;
+
+        //Open a handle to the OpenService manager
+        CComPtr<IOpenServiceManager> spManager;
+        hr = spManager.CoCreateInstance(CLSID_OpenServiceManager);
+
+        if (SUCCEEDED(hr))
+        {
+            CComPtr<IOpenService> spService;
+
+            //Install my search provider
+            //URL-OF-SERVICE: See http://www.opensearch.org/Specifications/OpenSearch/1.1#OpenSearch_description_elements
+            hr = spManager->InstallService(URL-OF-SERVICE, &spService);
+
+            if (hr==S_OK)
+            {
+                //Request that the user change their search default
+                hr = spService->SetDefault(TRUE, NULL);
+            }
+        }
+    }
+
+    if (fComInitialized)
+    {
+        CoUninitialize();
+    }
+	
+Note that the SetDefault API will show a dialog (see Figure 2) requesting that the user change their search default. The user can approve or deny this request from the software during installation. If approved, the software can change the default setting. If denied, however, the software should not change user's default settings. The user can change this setting at any time by using the Manage Add-ons dialog.
+注意，SetDefault将显示一个对话框，给用户一个改变默认搜素的机会。用户可以允许或许拒绝。如果允许了，软件将改变默认设置，否则，软件不应该改变用户的默认设置。用户可以通过Add-ons对话框在任何时候改变这个设置
+If the binary that is calling the SetDefault API is signed with a valid code signing certificate, the program name and publisher will be displayed in the Search Provider Default dialog. We recommend code that calls SetDefault be signed.	
+如果调用SetDefault的二进制文件标记为有效代码（标记证书），程序名称和发行者将被显示在默认搜素对话框中。我们推荐调用者应该是已经签名的。

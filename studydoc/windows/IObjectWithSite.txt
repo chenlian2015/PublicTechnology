@@ -1,0 +1,20 @@
+IObjectWithSite interface
+Provides a simple way to support communication between an object and its site in the container.
+IObjectWithSite 接口，提供一种支持对象和容器站点间通信的简单方式
+Often an object needs to communicate directly with a container site object and, in effect, manage the site object itself. Outside of IOleObject::SetClientSite, there is no generic means through which an object becomes aware of its site. IObjectWithSite provides simple objects with a simple siting mechanism (lighter than IOleObject) This interface should only be used when IOleObject is not already in use.
+通常，对象需要和容器站点对象进行交互，以及有效管理对象自身的站点对象。IOleObject::SetClientSite外，对象没有一种通用方式可以知道其自身的站点。IObjectWithSite通过简单站点机制，提供简单对象，这个接口只能在IOleObject没有被使用的情况下才能使用。
+Through IObjectWithSite, a container can pass the IUnknown pointer of its site to the object through IObjectWithSite::SetSite. Callers can also retrieve the latest site passed to SetSite through IObjectWithSite::GetSite. This latter method is included as a hooking mechanism, allowing a third party to intercept calls from the object to the site.
+通过IObjectWithSite，容器可以通过IObjectWithSite::SetSite传递其自身站点IUnknown指针给对象，调用者也可以通过IObjectWithSite::GetSite来获取最近一次通过SetSite传递的站点.后面这个接口，也可作为一种钩子机制，以允许第三方阻止对象到站点的调用。
+
+What is an object with a site? Why do one object might need one?
+一个拥有站点的对象是什么？为何对象需要站点？
+After searching a lot i finally found what this means. An object with
+"site" is an object that MUST be contained into a container(provided by
+the pointer passed to SetSite()) in order to function correctly. 
+一个拥有站点的对象，即使一个必须被包含至容器（通过setsite方式传递其指针）才能正常运行的对象。
+The object implementing IObjectWithSite does so to have an pointer to its container, and actually use that pointer internally to communicate with its container. This is needed by plugin objects  to communicate with their hosts.
+实现了IObjectWithSite接口，对象就可以拥有指向容器的指针，通过这个指针来和容器进行交互。
+
+   The SetSite() method only requires an IUnknown, but for an real plugin object this will not be sufficient. The interface pointer passed in(to the container object) will most likely implement an custom interface as well, that the plugin will QueryInterface() for, as soon as it is passed in. This is why  SetSite() must return an error code. This is also the reason for which the GetSite() method requires an IID - internally, GetSite() will queryinterface() its  pointer passed to SetSite().
+
+The plugin will only hold one site at a time, so an second SetSite() should release() an already stored one and addref() the current one (personal thought). 

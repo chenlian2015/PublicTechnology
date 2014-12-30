@@ -1,0 +1,3 @@
+IDispatch::GetIDsOfNames method
+Maps a single member and an optional set of argument names to a corresponding set of integer DISPIDs, which can be used on subsequent calls to Invoke. The dispatch function DispGetIDsOfNames provides a standard implementation of GetIDsOfNames.
+映射一个单独成员和可选names参数集合到一个DISPIDs整数集合，DISPIDs可随后被用来调用Invoke。派发函数DispGetIDsOfNames提供一种标准方式来实现GetIDsOfNames

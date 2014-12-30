@@ -1,0 +1,42 @@
+Implementing a Custom Download Manager
+实现一个定制的下载管理器
+The ability to implement a custom download manager was introduced in Microsoft Internet Explorer 5.5. This feature enables you to extend the functionality of Windows Internet Explorer and WebBrowser applications by implementing a Component Object Model (COM) object to handle the file download process.
+从IE5.5开始，定制下载管理器被引入。这允许你通过实现一个COM对象来处理下载过程
+By implementing a custom download manager, your WebBrowser application can be extended to display a custom user interface. You could, for example, create a download manager that enables you to view MPEG files or launch applications.
+通过实现一个定制的下载管理器，你的WebBrower应用程序可以被扩展，以显示一个定制的用户界面。比如，你可以创建你一个下载管理器来查看MPEG图片或者启动应用程序
+A download manager is implemented as a COM object that exposes the IUnknown and IDownloadManager interface. IDownloadManager has only one method, IDownloadManager::Download, which is called by Internet Explorer or a WebBrowser application to download a file. When a file is selected for download in a WebBrowser application, the custom download manager is accessed in one of two ways.
+下载管理器以com对象方式实现，暴露IUnknown和IDownloadManager接口。IDownloadManager只有一个方法，IDownloadManager::Download,该方法在WebBrower下载一个文件时候被调用。当一个文件被选中下载，定制的下载管理器用以下梁总方法被访问。
+If the IServiceProvider::QueryService method of the IServiceProvider interface is implemented, the WebBrowser application first calls IServiceProvider::QueryService to retrieve an IDownloadManager interface pointer. The following example shows a possible implementation of the IServiceProvider::QueryService method.
+如果IServiceProvider::QueryService被实现，WebBrower首先调用IServiceProvider::QueryService获取IDownloadManager接口。如下实例显示可能的实现。
+STDMETHODIMP CServiceProvider::QueryService(REFGUID guidService,
+                                            REFIID riid,
+                                            void **ppv)
+{
+    HRESULT hr = E_NOINTERFACE;
+
+    if (guidService == SID_SDownloadManager && riid == IID_IDownloadManager)
+    {
+        // Create new CDownloadMgr object using ATL.
+        CComObject<CDownloadMgr>* pDownloadMgr;
+        hr = CComObject<CDownloadMgr>::CreateInstance(&pDownloadMgr);
+        
+        // Query the new CDownloadMgr object for IDownloadManager interface.
+        hr = pDownloadMgr->QueryInterface(IID_IDownloadManager, ppv);
+    }
+
+    return hr;
+}
+For Internet Explorer 6 and later, if the WebBrowser application does not implement the IServiceProvider::QueryService method, or when using Internet Explorer itself for which IServiceProvider::QueryService cannot be implemented, the application checks for the presence of a registry key containing the class identifier (CLSID) of the download manager COM object. The CLSID can be provided in either of the following registry values.
+对于IE6及更新版本，如果WebBrower应用程序没有实现IServiceProvider::QueryService，或者当用户使用IE自身，其IServiceProvider::QueryService不能被实现，WebBrower核查下载管理COM对象是否在注册表中存在。CLSID可以通过下面两者之一方式提供
+HKEY_LOCAL_MACHINE 
+     Software
+          Microsoft
+               Internet Explorer
+                    DownloadUI
+HKEY_CURRENT_USER 
+     Software
+          Microsoft
+               Internet Explorer
+                    DownloadUI
+If the application cannot locate a custom download manager the default download user interface is used.
+如果应用程序不能定位到下载管理器，默认下载将被使用

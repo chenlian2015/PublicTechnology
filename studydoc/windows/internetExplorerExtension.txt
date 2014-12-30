@@ -1,0 +1,257 @@
+一.About Browser Extensions关于浏览器扩展
+
+Browser extensions allow developers to provide easy access to their browser enhancements by adding elements (like an Explorer Bar) to the default user interface. This enables developers to create Explorer Bars and add entries into the standard context menus. Developers can also add entries into the Tools menu and buttons to the toolbar.
+浏览器扩展允许程序开发人员，通过向用户界面添加元素（比如浏览器栏），来提供浏览器增强功能简单访问方式。
+Benefits 
+Scenarios 方案
+Related Topics 
+Overviews 概述
+Tutorials 指栏
+Examples 
+Important  Because extensions run in-process with the browser process, they should not be written using managed code. For more information, see:
+
+The Old New Thing: Do not write in-process shell extensions in managed code
+Benefits
+So what are the benefits of utilizing利用 browser extensions? Microsoft Internet Explorer 4.0 allowed developers to create Explorer Bars (also known as Browser Bands and Communication Bands) and add entries to the standard context menus. Beginning with Internet Explorer 5, browser extensions allow developers to provide access to Microsoft Win32; applications, scripts, and Explorer Bars directly from the Windows Internet Explorer user interface. Access can be provided from:
+使用浏览器扩展有什么好处呢？从IE4.0开始，便允许开发创建Explorer bars（浏览器交互带）以及向上下文菜单添加项目。从IE5开始，扩展便可以访问WIN32;应用程序，脚本，以及直接通过IE用户接口访问Explorer Bars
+Menu items in the Tools menu菜单
+Toolbar buttons工具栏按钮
+These additions are enhancements to the existing user interface, so there will be no negative effect on the end-user's experience.
+Scenarios这些添加用于强化用户接口，因此将不会对终端用户体验产生负面影响
+
+
+二.About the Browser关于浏览器
+This section explains the architecture of Microsoft Internet Explorer 4.0 and later and provides information you will find helpful when reusing these components.
+该段描素IE4.0及更新版本的架构，以及提供一些信息，有助于你重用这些模块的时候
+This topic contains the following sections.
+这个主题包含如下段落
+Architectural Overview 
+架构概述
+Choosing the Correct Component 
+选择正确组件
+Providing Extra Control 
+提供额外控制
+Controlling the Context Menus 
+控制菜单
+Overriding the Context Menus 
+重载菜单
+Adding to the Standard Context Menus 
+添加标准菜单
+Extending the Dynamic HTML Object Model 
+扩展动态HTML对象模型
+Download Control 
+下载控制
+Security Manager 
+安全管理
+
+
+Architectural Overview
+Windows Internet Explorer uses Microsoft ActiveX Controls and Active Document interfaces to connect components. The following diagram provides a high-level overview.
+IE使用Activex以及活动文档接口来连接组件。下图提供了高级概图
+图-略http://i.msdn.microsoft.com/dynimg/IC16039.gif
+
+IExplore.exe is at the top level; it is a small application that is instantiated when Internet Explorer is loaded. This executable application uses Internet Explorer components to perform the navigation, history maintenance, favorites maintenance, HTML parsing and rendering, and so on, while it supplies the toolbar and frame for the stand-alone browser. IExplorer.exe directly hosts the Shdocvw.dll component.
+在顶层的IExplore.exe ；是一个很小的应用程序，在IE被加载的时候实例化。这个可执行应用程序使用IE组件来执行浏览，历史记录，最喜欢记录，HTML解析渲染等，同时，它支持工具栏，边框。IExplorer.exe是Shdocvw.dll组件的宿主
+
+Shdocvw.dll in turn hosts the Mshtml.dll component, as well as any other Active Document component (such as a Microsoft Office application) that can be loaded in place in the browser when the user navigates to a specific document type. Shdocvw.dll supplies the functionality associated with navigation, in-place linking, favorites and history management, and PICS support. This DLL also exposes interfaces to its host to allow it to be hosted separately as an ActiveX control. The Shdocvw.dll component is more frequently referred to as the WebBrowser Control. In-place linking refers to the ability to click a link in the HTML of the loaded document and to load a new HTML document in the same instance of the WebBrowser Control. If only Mshtml.dll is being hosted, a click on the link results in a new instance of the browser.
+Shdocvw.dll组件封装了Mshtml.dll组件，和其他活动文档组件（比如Office应用程序）一样，当用户浏览这类型的文档时，可以被加载放在浏览器中。Shdocvw.dll 支持了浏览、内部链接、最爱、历史记录管理的相关功能，以及PICS的支持。这个DLL也给他的宿主暴露了接口，以能和Activex控件分开托管。Shdocvw.dll 组件更多被简称为WebBrower控件。内部链接参考单击HTML超链接然后在同一个WebBrower控件中加载一个新的HTML文档。“如果仅Mshtml.dll被托管了，一个超链接的单击事件会导致构造一个新的浏览器实例。”
+Mshtml.dll is the component that performs the HTML parsing and rendering in Internet Explorer 4.0 and later, and it also exposes the HTML document through the Dynamic HTML Object Model. This component hosts the scripting engines, Microsoft virtual machine, ActiveX Controls, plug-ins, and other objects that might be referenced in the loaded HTML document. Mshtml.dll implements the Active Document server interfaces, which allows it to be hosted using standard Component Object Model (COM) interfaces.
+从IE4及更新版本，Mshtml.dll 组件解析渲染HTML,通过动态HTML对象模型方式暴露文档接口。这个组件托管了脚本引擎，微软虚拟机，Activex控件，插件，以及其他和加载HTML文档相关的对象。Mshtml.dll 实现了活动文档服务接口，以允许其被COM模型接口所包托管
+As this is an OLE-based architecture, the ambient properties that are commonly used by ActiveX Controls can also be applied to the Internet Explorer components. In this way, a host of the WebBrowser Control can set an ambient property that will filter down to all the frames and controls hosted in the loaded document.
+既然这是一个基于OLE的架构，通常被Activex控件使用的环境熟悉也可以用于IE组件。通过这种方式，一个WebBrower控件宿主可以设置一个环境属性，该属性将“渗透”到所有加载在文档中的frames以及控件宿主。
+
+
+Choosing the Correct Component
+The WebBrowser Control provides a rich set of functionality that a host typically requires, such as that for in-place linking. Therefore, it is much more applicable for most applications to host this control instead of MSHTML for browsing or viewing HTML documents. Hosting MSHTML is recommended only for specialized applications, such as parsing HTML. The WalkAll Sample Source Page demonstrates how to host MSHTML.
+WebBrower控件提供宿主通常所需丰富的功能，比如内部链接。因此，其对于大多托管该控件的应用程序，其更具可用性，而不是用于浏览的MSHTML控件或者查看HTML文档。托管MSHTML仅在特殊特殊应用中被推荐，比如解析HTML. 实例WalkAll演示了如何托管MSHTML
+It should also be noted that although hosting MSHTML is slightly more lightweight than hosting the WebBrowser Control, the savings rarely justify the extra work involved in implementing functionality that is already available in the WebBrowser Control. It is very likely that the WebBrowser Control will already be loaded in memory, and navigating to a frameset page will also result in the WebBrowser Control being loaded as part of the standard working set.
+也需要注意，尽管托管MSHTML要略微比托管WebBrower控件要轻量一些，稀少积储将辩证实现已经在WebBrower控件中实现的功能所需的额外工作。
+
+
+Providing Extra Control
+Hosts of the WebBrowser Control and MSHTML components have control over certain functionality. In the case of the WebBrowser Control, this includes navigation, as well as receiving events when the document is loaded. Hosts of either component can obtain extra control over functionality by implementing the IDocHostUIHandler and IDocHostShowUI interfaces. These interfaces are commonly used to override the context menus that are supplied by default for the browser. Their uses also include setting the 3-D border, overriding the location in the registry where options are stored, and extending the Dynamic HTML Object Model.
+The component obtains these interfaces from the host by calling QueryInterface on the IOleClientSite interface implemented by the hosting application.
+WebBrowser Control 和 MSHTML components宿主有一些控制功能。在这种情况下，WebBrowser（包含了浏览功能），也接收文档被加载的事件。每个控件的宿主通过实现IDocHostUIHandler 和IDocHostShowUI接口，都能获取额外的控制功能。这些接口通常用来重载浏览器默认的上下文菜单。它们的用途还包括3-D边界，重写注册表选项，以及扩展动态HTML对象模型。
+组件通过调用在宿主实现对象IOleClientSite上的QueryInterface接口来获取这些接口。
+
+
+
+Controlling the Context Menus
+A common requirement of hosting the WebBrowser Control is the ability to override or add to the context menus that are displayed as the result of a right-click in the browser window. This is of particular interest to applications that are using the WebBrowser Control to view rich content but do not want the user to know that HTML is being viewed. This is also advantageous for applications that do not want the user to be able to view the HTML source for the content.
+重载默认菜单，是WebBrowser宿主的一个常见需求。这也有利于不想让用户看到HTML源码的运用。
+There are two techniques available to achieve this. The first involves the use of the IDocHostUIHandler interface and allows an application to disable or replace the context menus. The second technique involves the use of the registry and allows the existing context menus to be extended.
+有两种技巧可以实现这个功能，第一个解决方式是使用IDocHostUIHandler接口，并允许应用程序禁用或者替换上下文菜单。第二种实现方式是修改注册表，允许上下文菜单被扩展。
+
+Overriding the Context Menus
+The WebBrowser Control's context menus can be overridden entirely by implementing the IDocHostUIHandler::ShowContextMenu method. Returning E_NOTIMPL or S_FALSE from this method indicates to the WebBrowser Control that it should display its own standard context menu. However, returning S_OK causes the WebBrowser Control not to display its menus, and it assumes that the host has performed the appropriate action. The host can disable all context menus or bring up its own context menus. The parameters supplied to the host that implements this method allow that host to identify which of the default menus will be displayed by the WebBrowser Control, as well as the coordinates where the menu will be displayed. This provides the host the full context for the menu. For example, the host can choose to override only the image context menus and not the standard context menus.
+通过IDocHostUIHandler::ShowContextMenu返回S_OK（其假设宿主已经执行了恰当的动作）来隐藏WebBrower菜单，否则显示其标准菜单。宿主可以禁用所有菜单，或者弹出其自己的菜单。提供给宿主的参数让素数可以确定哪些默认菜单将不显示，以及菜单显示的坐标。这提供了菜单的全部上下文。比如，宿主可以选择仅仅重载图片上下文菜单而放行标准菜单。
+IDocHostUIHandler::ShowContextMenu第一个参数用于确定弹出菜单类型：
+CONTEXT_MENU_DEFAULT (0x0)
+The default shortcut menu for a Web page.
+CONTEXT_MENU_IMAGE (0x1)
+Shortcut menu for images.
+CONTEXT_MENU_CONTROL (0x2)
+Shortcut menu for scrollbars and select elements.
+CONTEXT_MENU_TABLE (0x3)
+Not used.
+CONTEXT_MENU_TEXTSELECT (0x4)
+Shortcut menu for selected text.
+CONTEXT_MENU_ANCHOR (0x5)
+Shortcut menu for hyperlinks.
+CONTEXT_MENU_UNKNOWN (0x6)
+Not used.
+CONTEXT_MENU_VSCROLL (0x9)
+Shortcut menu for vertical scroll bar.
+CONTEXT_MENU_HSCROLL (0x10)
+Shortcut menu for horizontal scroll bar.
+CONTEXT_MENU_MEDIA (0x11)
+Internet Explorer 9 and later. Shortcut menu for media element controls.
+IDocHostUIHandler::ShowContextMenu第二个参数用于确定菜单坐标
+IDocHostUIHandler::ShowContextMenu第三个参数A pointer to the IUnknown of an IOleCommandTarget interface used to query command status and execute commands on this object.查询命令状态以及执行命令。
+IDocHostUIHandler::ShowContextMenu第四个参数A pointer to an IDispatch interface of the object at the screen coordinates specified in ppt. This enables a host to pass particular objects, such as anchor tags and images, to provide more specific context.
+菜单弹出位置所指向的HTML元素IUnknown接口
+
+Adding to the Standard Context Menus
+Items can be added to the existing context menus of the WebBrowser Control by placing entries in the registry and linking these to URLs that execute script. To add items to the standard WebBrowser Control context menus, create or open the following key:
+HKEY_CURRENT_USER 
+     Software
+          Microsoft
+               Internet Explorer
+                    MenuExt
+向标准菜单添加项目
+通过在注册表中放置条目来添加标准菜单项，并连接可执行脚本。
+
+
+Optional keys
+Under the item registry key created earlier, there are a couple of optional values. One of these specifies on which context menus this item will appear. The other specifies that the script should be run as a dialog box.
+在刚创建的注册表key下面，有几个可选值。其中有个值指定了哪个上下文菜单项是可见的。其他则确定脚本以对话框方式执行。
+The "Contexts" DWORD value specifies the context menus in which an item will appear. This value is a bit mask consisting of the logical OR of the following values (defined in Mshtmhst.h). These values correspond to the constant passed in an IDocHostUIHandler::ShowContextMenu call.
+Contexts双字指定哪个菜单项可见。这个值是一个逻辑或位掩码（定义在Mshtmhst.h中）组成。其值想应于传递给IDocHostUIHandler::ShowContextMenu的值。
+
+Value	Constant Name	Description
+0x01	CONTEXT_MENU_DEFAULT	Shown on all context menus.
+0x02	CONTEXT_MENU_IMAGE	Context menu of images only.
+0x04	CONTEXT_MENU_CONTROL	Context menu of form controls only.
+0x08	CONTEXT_MENU_TABLE	Context menu of tables only.
+0x10	CONTEXT_MENU_TEXTSELECT	Context menu of selected text only, including images in a selected region.
+0x20	CONTEXT_MENU_ANCHOR	Context menu of links only. Does not include linked images or image maps.
+0x40	CONTEXT_MENU_UNKNOWN	Right-click on none of the above.
+
+So if, for example, you want this simple extension to appear only in the default menu and the text selection menu, you could create a DWORD value in the registry under the My Menu Item key called "Contexts" and set it to 0x11. From C/C++ code, this can be expressed as:
+例如，如果你想仅显示默认菜单和文本选择菜单，你可以在注册表下创建Contexts，并设其值为0x11.如果是C/c++代码则表达式如下：CONTEXT_MENU_DEFAULT | CONTEXT_MENU_TEXTSELECT
+
+
+The other optional registry DWORD value is "Flags". There is only one valid bit (0x1) for this registry value; it is defined as MENUEXT_SHOWDIALOG in Mshtmhst.h. When this bit is set, the script is run just as if it had been called through the IHTMLWindow2::showModalDialog method. The window that runs the script is not hidden, and the dialog box is not automatically closed after inline and onload script finishes. The external.menuArguments value still contains the window object where the user selected the menu item.
+另一个可选注册表双字类型“Flags”,这个值仅有一个有效bit位（0x1）;其定义为MENUEXT_SHOWDIALOG。当这个bit设置时，脚本仅在其通过IHTMLWindow2::showModalDialog调用时。运行脚本的窗口不会被隐藏，对话框在内敛和载入脚本后不自动关闭。external.menuArguments仍将包含用户选择菜单项窗口对象。
+
+
+The context menu event
+Whenever a context menu extension is triggered, the event object off the main window (external.menuArguments.event) contains information about where the user clicked and which context menu was shown. The mouse coordinates are valid along with srcElement. The type value contains one of the following strings, indicating which context menu was shown to the user:
+当上下文菜单扩展被处罚以后，事件对象主窗口（external.menuArguments.event）包含如下某个信息，表示哪个菜单将展示给用户
+MenuExtDefault
+MenuExtImage
+MenuExtControl
+MenuExtTable
+MenuExtTextSelect
+MenuExtAnchor
+MenuExtUnknown
+
+
+
+Extending the Dynamic HTML Object Model扩展动态HTML对象模型DHOM
+It is possible for the hosting application to extend the Dynamic HTML Object Model so that scripts can refer to functionality implemented by the host. Such scripts refer to the host by specifying the external object that is available from the window object. For example, a reference to "window.external.speech" will call the host to resolve the name "speech." All standard script within the document will be executed normally.
+宿主应用程序可以扩展DHOM模型，因此脚本可以指向被宿主实现的功能。这样的脚本通过external object指向宿主。比如，一个"window.external.speech"的引用将调用宿主来解析"speech"名字对象。所有在文档中的标准脚本将被正确执行。
+This extension mechanism is implemented in the host by providing an IDispatch interface for the object model extension that will have IDispatch::GetIDsOfNames and IDispatch::Invoke called on it to resolve any references to the external object. The IDispatch that the host provides is obtained by the WebBrowser Control or MSHTML component by calling the host's IDocHostUIHandler::GetExternal method.
+For an example of how to extend the Dynamic HTML Object Model, see the Driller Sample Source Page.
+host的扩展机制通过提供IDsipatch接口给对象模型扩展，其将调用IDispatch::GetIDsOfNames和IDispatch::Invoke来解析任何相关的外部对象。host提供的IDispath会被WebBrower控件或者MSHTML组件调用宿主的IDocHostUIHandler::GetExternal方法来获取。可到http://www.microsoft.com/en-us/download/details.aspx?id=944看实例。
+
+
+
+Download Control下载控制
+Hosts can control certain aspects of downloading—frames, images, Java, and so on—by implementing both IOleClientSite and an ambient property defined as DISPID_AMBIENT_DLCONTROL. When the host's IDispatch::Invoke method is called with dispidMember set to DISPID_AMBIENT_DLCONTROL, it should place zero or a combination of the following values in pvarResult.
+宿主通过实现IOleClientSite和一个ambient属性（定位为DISPID_AMBIENT_DLCONTROL）可以控制下载帧，图像，java等待，当宿主的IDispatch::Invoke被调用（dispidMember设置为DISPID_AMBIENT_DLCONTROL），其应该设置pvarResult的值为0或者如下值
+
+注意： DISPID_AMBIENT_DLCONTROL尽在容器中调用，在插件BHO中是不会被调用的。
+
+DLCTL_BGSOUNDS	The browsing component will play background sounds associated with the document.浏览器组件将播放文档相关的背景音乐
+DLCTL_DLIMAGES	The browsing component will download images from the server.浏览器组件将从服务器下载图像
+DLCTL_DOWNLOADONLY	The browsing component will download the page but not display it.下载不显示页面
+DLCTL_FORCEOFFLINE	The browsing component will always operate in offline mode. This causes the BINDF_OFFLINEOPERATION flag to be set even if the computer is connected to the Internet when making requests through URLMON.将一直离线模式操作。即使电脑目前联网情况下，通过URLMON发起请求
+DLCTL_NO_BEHAVIORS	The browsing component will not execute any behaviors.不执行任何behaviors
+DLCTL_NO_CLIENTPULL	The browsing component will not perform any client pull operations.不执行任何客户端拉操作
+DLCTL_NO_DLACTIVEXCTLS	The browsing component will not download any ActiveX Controls in the document.不下载文档中的任何Activex组件
+DLCTL_NO_FRAMEDOWNLOAD	The browsing component will not download frames but will download and parse the frameset page. The browsing component will also ignore the frameset, and will render no frame tags.
+DLCTL_NO_JAVA	The browsing component will not execute any Java applets.
+DLCTL_NO_METACHARSET	The browsing component will suppress HTML Character Sets reflected by meta elements in the document.
+DLCTL_NO_RUNACTIVEXCTLS	The browsing component will not execute any ActiveX Controls in the document.
+DLCTL_NO_SCRIPTS	The browsing component will not execute any scripts.
+DLCTL_OFFLINE	Same as DLCTL_OFFLINEIFNOTCONNECTED.
+DLCTL_OFFLINEIFNOTCONNECTED	The browsing component will operate in offline mode if not connected to the Internet. This causes the BINDF_GETFROMCACHE_IF_NET_FAIL flag to be set if the computer is connected to the Internet when making requests through URLMON.
+DLCTL_PRAGMA_NO_CACHE	The browsing component will force the request through to the server and ignore the proxy, even if the proxy indicates that the data is up to date. This causes the BINDF_PRAGMA_NO_CACHE flag to be set when making requests through URLMON.
+DLCTL_RESYNCHRONIZE	The browsing component will ignore what is in the cache and ask the server for updated information. The cached information will be used if the server indicates that the cached information is up to date. This causes the BINDF_RESYNCHRONIZE flag to be set when making requests through URLMON.
+DLCTL_SILENT	The browsing component will not display any user interface. This causes the BINDF_SILENTOPERATION flag to be set when making requests through URLMON.
+DLCTL_URL_ENCODING_DISABLE_UTF8	The browsing component will disable UTF-8 encoding.
+DLCTL_URL_ENCODING_ENABLE_UTF8	The browsing component will enable UTF-8 encoding.
+DLCTL_VIDEOS	The browsing component will play any video clips that are contained in the document.
+
+
+Security Manager安全管理
+Hosts of the browsing components can implement their own security management and override the settings that exist for the WebBrowser Control. This is achieved by implementing the IInternetSecurityManager interface. The browsing component will obtain this interface by calling the host's IServiceProvider::QueryService method with SID_SInternetSecurityManager. For more information on security management, see About URL Security Zones.
+浏览器组件宿主可以实现他们自己的安全管理，覆盖当前WebBrower控件已有的设置。这通过实现IInternetSecurityManager接口来完成。浏览器组件将通过宿主的IServiceProvider::QueryService来获取该接口，同时传递SID_SInternetSecurityManager参数。更多安全问题请看http://msdn.microsoft.com/en-us/library/ms537183(v=vs.85).aspx
+
+三.Adding Entries to the Standard Context Menu添加条目到标准上下文菜单
+
+Requirements and Dependencies 需求和依赖
+Implementation Steps 实现步骤
+Developers who want to add entries to the standard context menus in Internet Explorer must be familiar with the registry. Developers should also be familiar with context menus. For more information about context menus, see the Windows Shell API documentation in the Windows Software Development Kit (SDK).
+需要熟悉注册表。熟悉上下文菜单。要了解更多关于上下文菜单的信息，去windows SDK,看windows shell文档
+
+Implementation Steps
+The following steps are required to add an entry into the standard context menus in Internet Explorer.
+步骤如下
+Create a new key, using the text you want displayed in the context menu as the name, under:
+HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt
+The result should look like:
+
+HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\<Menu Text>
+<Menu Text> should be replaced with the text that you want displayed in the context menu. The name can include an ampersand (&) character, which will cause the character that follows to be underlined and used as a shortcut key.
+你也可以用&字符，这将引起后面字符拥有下划线，并被用作快捷键关键字
+Set the default value of the key to the URL of the page that contains the script you want the context menu entry to execute. This script can obtain the parent window object, the screen where the context menu item was executed, from the menuArguments property of the external object.
+Optional. Create a binary value, Contexts, under:
+HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\<Menu Text>
+The result should look like:
+
+HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\<Menu Text>\Contexts
+Set the value of Contexts to indicate which contexts your entry should appear in the standard context menu by using a bit mask consisting of the logical OR of the following values:
+Context	Value
+Default	0x1
+Images	0x2
+Controls	0x4
+Tables	0x8
+Text selection	0x10
+Anchor	0x20
+For example, if you want your context menu entry to appear in the default context menu and when the context is a text selection, set the value of Contexts to 0x11.
+Optional. Create a DWORD value, Flags, under:
+HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\<Menu Text>
+The result should look like:
+
+HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\MenuExt\<Menu Text>\Flags
+Set the value of Flags to 0x1 to make the script run just as if it had been called through the showModalDialog method. Unlike the showModalDialog method, the script can access the window object of the parent window from the menuArguments property of the external object.
+Strings stored inside a resource can be referenced by providing the path to the resource and reference identification in the format "path, resource_id". For example, if you wanted to use string resource 123 in Example.dll, you would use "Example.dll, 123".
+
+
+
+四.Adding Explorer Bars添加浏览器Bars
+
+The implementation described here is valid for Microsoft Internet Explorer 5 or later. To learn how to implement Explorer Bars in Internet Explorer 4.0, see the band objects documentation in the Windows Software Development Kit.描述使用于IE5以及更新版本，IE4.0的实现方式请看windows SDK的绑定对象文档
+
+Implementation Steps
+Icons and strings stored inside a resource can be referenced by providing the path to the resource and reference identification in the format "path, resource_id". For example, if you wanted to use string resource 123 in Example.dll, you would use "Example.dll, 123".
+存储在资源中的图标和字符串可以通过资源路径或者相关ID进行引用，格式"path,resource_id".比如，如果你想使用在Example.dll中的字符串资源“123”，你需要使用"Example.dll, 123".
+
+五.添加固定菜单
+注意：
+1.执行脚本中，window.location.href是注册表中的路径
+2.ie容器菜单，是每个tab进程对应的自己的菜单，具体实验方式，用的就是在注册表中添加菜单项，有时不同的tab激活时，菜单可能不同（由于还没有来得及加载）
+3.需要注意Wow6432Node问题
+4.可添加执行脚本，可执行文件exe路径，以及com路径（需要访问DHOM需要实现IObjectClientSite接口）
