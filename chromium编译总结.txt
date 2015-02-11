@@ -1,0 +1,100 @@
+
+
+编译步骤及环境
+环境
+一.机器配置以及系统环境
+C:\Users\Administrator>systeminfo
+OS Name:                   Microsoft Windows 7 Ultimate
+OS Version:                6.1.7601 Service Pack 1 Build 7601
+OS Manufacturer:           Microsoft Corporation
+System Type:               x64-based PC
+Processor(s):              1 Processor(s) Installed.
+                           [01]: Intel64 Family 6 Model 42 Stepping 7 GenuineIntel ~1584 Mhz
+System Locale:             zh-cn;Chinese (China)
+Total Physical Memory:     8,104 MB
+Available Physical Memory: 4,061 MB
+Virtual Memory: Max Size:  16,207 MB
+Virtual Memory: Available: 12,795 MB
+Virtual Memory: In Use:    3,412 MB
+                                                                              
+二.软件环境(注意，在安装VS2010-SP1前安装Directx和Windows SDK，否则会出现DirectX和Windows SDK安装不成功的现象)
+1.
+Product name:Microsoft(R)DirectX for Windows(R)
+File version:9.29.1962.01
+language:English
+Size:571MB
+默认安装，不用修改路径
+2.
+Product name:Windows7.1 Software Development Kit
+File version:7.1.7600.16385
+languageLEnglish
+Size:71.8KB
+默认安装，不用修改路径
+3.
+Microsoft Visual Studio 2010
+Version 10.0.40219.1 Sp1Rel
+Microsoft .NET Framework
+Version 4.5.5.938 SP1Rel
+默认安装，不用修改路径
+
+三.下载安装gclient
+具体请见chromium官文：
+http://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
+
+四.(如果不进行这一步，系统会提示你Windows SDK需要升级补丁)
+修改Windows  SDK 
+将Windows  SDK安装目录下Include\winrt\asyncinfo.h文件中的 
+enum class AsyncStatus { 
+改为enum /*class*/ AsyncStatus { 
+
+
+五.
+设置环境变量GYP_MSVS_VERSION=2010 
+2010为vs2010
+
+六.
+下载Chromium源码包，chromium本来是用gclient、svn(svn从2014年8月份已经停止维护，目前完全转移到了git)或者git下载的，但这里之下用压缩包方式，是为了中国国内连外网的众多因素（慢，易忠端）
+http://chromium-browser-source.commondatastorage.googleapis.com/chromium_tarball.html 
+
+七.
+在chromium下（即src同级）建文本文件chromium.gyp_env
+内容为：
+{'GYP_DEFINES': 'component=shared_library'} # use space to delimit additional defines.
+
+八.
+cmd,然后目录切换至chromium/src/下，运行命令:
+1.
+set GYP_GENERATORS=ninja,msvs
+设置生成ninja和visual studio两种编译工程
+2.
+gclient runhooks --force
+生成ninja,和sln
+
+九.（注意：无论何时，其在升级更新，你都不要试图中断或者阻止，当然如果你不小心阻止了，你可以从新开始上一个命令即可）
+1.如果使用Visual Studio编译，则打开生成的chrome.sln编译即可
+2.如果使用ninja编译，则进入cmd命令，并切换至chromium/src/
+set GYP_DEFINES=component=shared_library #此项必须设置，可以提升链接速度
+set GYP_GENERATORS=ninja,msvs #为python执行做准备
+python build\gyp_chromium
+ninja -C out\Debug chrome.exe
+
+十.运行chrome.exe即可，ninja生成的可执行文件是通过Visual Studio打开sln工程，并通过附加进程的方式调试。
+注意:chrome调试要使用单进程方式：chrome.exe --my-great-args "go here" --single-process etc
+
+
+
+chromium编译总结
+1.gclient第一次运行的时候，会下载安装python和git以及相关nacl等包，以后与运行也可能下载升级这些包，千万不要试图通过该gclient下的python文件来阻止下载更新，否则你将遇到各种各样连网上都很难找到的错误
+2.不要迷信博客，因为博客很多是过时的，而chromium是每日更新的
+
+
+
+参考地址：
+ninja:
+https://code.google.com/p/chromium/wiki/NinjaBuild
+chrome代码获取:
+http://dev.chromium.org/developers/how-tos/get-the-code
+
+扩展：
+当然，还有很多你需要研究的，比如ninja和gyp的本质，以及相关语法。
+不过用ninja编译确实很快，我的电脑配置，编译下来大概一个小时，而用VS2010几乎要十几个小时

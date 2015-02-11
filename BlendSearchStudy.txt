@@ -1,0 +1,3 @@
+1.html iunkn为何不能使局部com指针
+2.为何document不能获取2次及以上
+3.scripthost何时释放?
